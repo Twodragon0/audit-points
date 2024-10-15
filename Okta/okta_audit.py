@@ -13,25 +13,19 @@ headers = {
 # 감사 결과 저장을 위한 리스트
 audit_data = []
 
-# 사용자 목록 가져오기 (200명 초과 페이징 처리)
+# 사용자 목록 가져오기
 def get_users():
     url = f"{OKTA_DOMAIN}/api/v1/users"
-    params = {'limit': 200}  # 한 번에 200명의 사용자 정보 요청
-    user_list = []
-    while url:
-        response = requests.get(url, headers=headers, params=params)
-        if response.status_code == 200:
-            users = response.json()
-            user_list.extend([user['profile']['login'] for user in users])
-            # 'next' 링크가 있는 경우 추가로 호출
-            url = response.links.get('next', {}).get('url')
-        else:
-            audit_data.append(["Users", "Error fetching users", response.status_code])
-            return None
-
-    total_users = len(user_list)
-    formatted_user_list = "\n".join(user_list)
-    audit_data.append(["Users", f"Total users: {total_users}", formatted_user_list])
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        users = response.json()
+        total_users = len(users)
+        user_list = [user['profile']['login'] for user in users]
+        # 리스트를 줄바꿈 처리
+        formatted_user_list = "\n".join(user_list)
+        audit_data.append(["Users", f"Total users: {total_users}", formatted_user_list])
+    else:
+        audit_data.append(["Users", "Error fetching users", response.status_code])
     return None
 
 # 사용자 계정 관리 현황 (입퇴사자 관리, 장기 미사용 계정, 공용계정 관리 등)
