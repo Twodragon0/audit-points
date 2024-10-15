@@ -167,7 +167,7 @@ def save_to_excel(audit_df):
 def audit_okta_security():
     print("Running Okta security audit...")
     
-    get_users()  # 사용자 목록 점검 (200명 이상 페이징 포함)
+    get_users()  # 사용자 목록 점검
     get_mfa_status()
     get_groups()
 
